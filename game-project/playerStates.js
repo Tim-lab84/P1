@@ -1,4 +1,4 @@
-import { Dust } from "./particles.js";
+import { Dust,Fire } from "./particles.js";
 
 //Create enum object that will pair values and names of each state , it helps
 //with code readability
@@ -50,8 +50,10 @@ export class Running extends State {
     this.game.player.frameY = 3;
   }
   handleInput(input) {
-    //include particles for running
-    this.game.particles.push(new Dust(this.game));
+    //include particles for running at 60 fps 1 per frame
+    //constructor in particles expects game,x,y , we bind it to the character 
+    this.game.particles.push(new Dust(this.game,this.game.player.x + this.game.player.width * 0.6,this.game.player.y+ 
+      this.game.player.height));
 
     if (input.includes("ArrowDown")) {
       this.game.player.setState(states.SITTING, 0);
@@ -106,6 +108,9 @@ export class Rolling extends State {
     this.game.player.frameY = 6;
   }
   handleInput(input) {
+    //fire 
+    this.game.particles.push(new Fire(this.game,this.game.player.x + this.game.player.width * 0.5,this.game.player.y+ 
+      this.game.player.height*0.5));
     //keep rolling at enter and as long as pressed
     if (!input.includes("Enter") && this.game.player.onGround()) {
       this.game.player.setState(states.RUNNING, 1);

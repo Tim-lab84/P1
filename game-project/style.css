@@ -23,7 +23,8 @@
 #layer5,
 #enemy_fly,
 #enemy_spider_big,
-#enemy_plant {
+#enemy_plant,
+#fire{
   display: none;
 }
 

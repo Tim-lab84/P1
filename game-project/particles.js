@@ -22,7 +22,7 @@ export class Dust extends Particles {
     this.y = y;
     this.speedX = Math.random();
     this.speedY = Math.random();
-    this.color = "black";
+    this.color = "rgba(0,0,0,0.2)"; //ghostly
   }
   draw(context) {
     //8:46:44
@@ -33,4 +33,37 @@ export class Dust extends Particles {
   }
 }
 export class Splash extends Particles {}
-export class Fire extends Particles {}
+export class Fire extends Particles {
+constructor(game,x,y){
+  super(game);
+  this.image = document.getElementById("fire");
+  this.size = Math.random() * 100 + 50;
+  this.x = x;
+  this.y = y;
+  this.speedX = 1;
+  this.speedY = 1;
+  //make fire rotate
+  this.angle = 0;
+  this.va = Math.random() * 0.2 -0.1;
+
+
+}
+update(){
+  super.update();
+  //fire angle update
+  this.angle+= this.va;
+  //fire sin wave
+  this.x += Math.sin(this.angle *5);
+
+}
+draw(context){
+  //wrapper for only particles
+  context.save();
+  //rotate fire
+  //from 0.0 to this item we want to rotate on over angle 
+  context.translate(this.x,this.y);
+  context.rotate(this.angle);
+  context.drawImage(this.image,-this.size* 0.5,-this.size *0.5,this.size,this.size);
+  context.restore();
+}
+}
