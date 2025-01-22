@@ -1,4 +1,4 @@
-import { Dust } from "./particles";
+import { Dust } from "./particles.js";
 
 //Create enum object that will pair values and names of each state , it helps
 //with code readability
@@ -50,6 +50,9 @@ export class Running extends State {
     this.game.player.frameY = 3;
   }
   handleInput(input) {
+    //include particles for running
+    this.game.particles.push(new Dust(this.game));
+
     if (input.includes("ArrowDown")) {
       this.game.player.setState(states.SITTING, 0);
     } else if (input.includes("ArrowUp")) {

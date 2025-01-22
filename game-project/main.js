@@ -28,6 +28,7 @@ window.addEventListener("load", function () {
       this.UI = new UI(this);
       //helpers for enemy spawn
       this.enemies = []; //holds all active enemies in an array
+      this.particles = []; //hold particles
       this.enemyTimer = 0; //increases by deltaTime everytime it
       // reaches a value in enemyinterval we create a new enemy and reset to 0
       this.enemyInterval = 1000;
