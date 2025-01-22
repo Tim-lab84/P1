@@ -1,6 +1,7 @@
 //capture and keep track of user inputs
 export class InputHandler {
-  constructor() {
+  constructor(game) {
+    this.game = game;
     //contains all active keys
     this.keys = [];
     window.addEventListener("keydown", (e) => {
@@ -15,7 +16,8 @@ export class InputHandler {
         this.keys.indexOf(e.key) === -1
       ) {
         this.keys.push(e.key);
-      }
+        //Debug mode to show hitboxes
+      } else if (e.key === "d") this.game.debug = !this.game.debug;
       console.log(e.key, this.keys);
     });
     window.addEventListener("keyup", (e) => {

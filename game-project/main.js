@@ -2,6 +2,7 @@ import { Player } from "./player.js";
 import { InputHandler } from "./input.js";
 import { Background } from "./background.js";
 import { FlyingEnemy, ClimbingEnemy, GroundEnemy } from "./enemies.js";
+import { UI } from "./UI.js"; //how do we update architecture when changing file names? it doesnt recognize
 
 /* Wrapper to make sure stylesheet and images are loaded
 before running the script */
@@ -23,12 +24,19 @@ window.addEventListener("load", function () {
       this.maxSpeed = 4;
       this.background = new Background(this);
       this.player = new Player(this);
-      this.input = new InputHandler();
+      this.input = new InputHandler(this);
+      this.UI = new UI(this);
       //helpers for enemy spawn
       this.enemies = []; //holds all active enemies in an array
       this.enemyTimer = 0; //increases by deltaTime everytime it
       // reaches a value in enemyinterval we create a new enemy and reset to 0
       this.enemyInterval = 1000;
+      this.debug = true;
+      this.score = 0;
+      this.fontColor = "black";
+      this.player.currentState = this.player.states[0];
+      //when player object is created activate its initial default state
+      this.player.currentState.enter();
     }
     //run for every animation frame
     update(deltaTime) {
@@ -54,6 +62,7 @@ window.addEventListener("load", function () {
       this.enemies.forEach((enemy) => {
         enemy.draw(context);
       });
+      this.UI.draw(context);
     }
     //add enemies at intervals
     addEnemy() {
