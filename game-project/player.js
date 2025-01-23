@@ -1,4 +1,15 @@
-import { Sitting, Running, Jumping, Falling, Rolling } from "./playerStates.js";
+import {
+  Sitting,
+  Running,
+  Jumping,
+  Falling,
+  Rolling,
+  Diving,
+  Hit,
+} from "./playerStates.js";
+
+import { CollisionAnimation } from "./collisionAnimation.js";
+import { FloatingMessage } from "./floatingMessages.js";
 //update and draw our character
 export class Player {
   //takes the whole game as an argument
@@ -41,15 +52,23 @@ export class Player {
       new Jumping(this.game),
       new Falling(this.game),
       new Rolling(this.game),
+      new Diving(this.game),
+      new Hit(this.game),
     ];
+    this.currentState = null;
   }
   update(input, deltaTime) {
     this.checkCollision(); //constantly check for collision
     this.currentState.handleInput(input);
     //horizontal movement
     this.x += this.speed;
-    if (input.includes("ArrowRight")) this.speed = this.maxSpeed;
-    else if (input.includes("ArrowLeft")) this.speed = -this.maxSpeed;
+    if (input.includes("ArrowRight") && this.currentState !== this.states[6])
+      this.speed = this.maxSpeed;
+    else if (
+      input.includes("ArrowLeft") &&
+      this.currentState !== this.states[6]
+    )
+      this.speed = -this.maxSpeed;
     //if array is empty stop  movespeed
     else this.speed = 0;
     //boundaries
@@ -61,7 +80,9 @@ export class Player {
     this.y += this.vy;
     if (!this.onGround()) this.vy += this.weight;
     else this.vy = 0;
-
+    //vertical boundaries (otherwise player gets stuck during dive attack on ground level)
+    if (this.y > this.game.height - this.height - this.game.groundMargin)
+      this.y = this.game.height - this.height - this.game.groundMargin;
     //sprite animation
     if (this.frameTimer > this.frameInterval) {
       this.frameTimer = 0;
@@ -120,9 +141,32 @@ export class Player {
       ) {
         //collision detected (delete enemy)
         enemy.markedForDeletion = true;
-        this.game.score++;
-      } else {
-        //no collision
+        //collision animation
+        this.game.collisions.push(
+          new CollisionAnimation(
+            this.game,
+            enemy.x + enemy.width * 0.5,
+            enemy.y + enemy.height * 0.5
+          )
+        );
+
+        //small fix for diving attack
+        if (
+          this.currentState === this.states[4] ||
+          this.currentState === this.states[5]
+        ) {
+          this.game.score++;
+          //let scorepoints fly towards enemies
+          this.game.floatingMessages.push(
+            new FloatingMessage("+1", enemy.x, enemy.y, 150, 50)
+          );
+          //
+        } else {
+          this.setState(6, 0); //6 dizzy state , 0 to stop game moving
+          this.game.score -= 5;
+          this.game.lives--;
+          if (this.game.lives <= 0) this.game.gameOver = true;
+        }
       }
     });
   }
